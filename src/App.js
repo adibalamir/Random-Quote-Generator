@@ -9,6 +9,20 @@ const api = axios.create({
   baseURL: 'http://localhost:8080',
 });
 class App extends Component {
+  getQuote = () => {
+    api.get(`/get_quote`)
+      .then(res => {
+      if (typeof res.data === 'string') {
+        this.props.fetchQuoteFailed()
+      } else {
+        this.props.fetchQuoteSuccessfully({
+          text: res.data.quoteText,
+          author: res.data.quoteAuthor
+        })
+    }
+  })
+  }
+
   render() {
     return (
       <div className="App">
