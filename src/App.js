@@ -1,7 +1,13 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
+import axios from 'axios'
+import { connect } from 'react-redux'
+import quotes from './reducers'
 
+const api = axios.create({
+  baseURL: 'http://localhost:8080',
+});
 class App extends Component {
   render() {
     return (
