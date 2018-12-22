@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
 import axios from 'axios'
 import { connect } from 'react-redux'
@@ -8,7 +7,19 @@ import quotes from './reducers'
 const api = axios.create({
   baseURL: 'http://localhost:8080',
 });
+
 class App extends Component {
+
+  componentDidMount() {
+    this.getQuote()
+  }
+
+  componentDidUpdate() {
+    if (this.props.hasFailed === true) {
+      this.getQuote()
+    }
+  }
+
   getQuote = () => {
     api.get(`/get_quote`)
       .then(res => {
@@ -26,23 +37,36 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
+        <h1>{this.props.quote.text}</h1>
+        <h2>~{this.props.quote.author}</h2>
+        <button onClick={this.getQuote}>Refresh</button>
       </div>
     );
   }
 }
 
-export default App;
+const mapStateToProps = state => ({
+  hasFailed: state.hasFailed,
+  quote: {
+    text: state.quote.text,
+    author: state.quote.author
+  }
+})
+
+const mapDispatchToProps = (dispatch) => ({
+  fetchQuoteSuccessfully: (quote) => dispatch({
+    type: 'FETCHING_QUOTE_SUCCEEDED',
+    quote
+  }),
+  fetchQuoteFailed: () => dispatch({
+    type: 'FETCHING_QUOTE_FAILED',
+    quote: {
+      text: '',
+      author: ''
+    }
+  })
+})
+
+
+
+export default connect(mapStateToProps, mapDispatchToProps)(App)
